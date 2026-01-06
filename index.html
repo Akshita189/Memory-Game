@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Powered Memory Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <h1>🎮 AI Powered Memory Game 🎮</h1>
+        </header>
+
+        <div class="ds-info" id="dsInfo">
+            <h3>📚 Data Structures Used:</h3>
+            <div class="ds-grid">
+                <div class="ds-item">
+                    <span class="ds-icon">📊</span>
+                    <strong>2D Array</strong>
+                    <p>Grid representation</p>
+                </div>
+                <div class="ds-item">
+                    <span class="ds-icon">📚</span>
+                    <strong>Stack</strong>
+                    <p>Undo functionality</p>
+                </div>
+                <div class="ds-item">
+                    <span class="ds-icon">🌳</span>
+                    <strong>Binary Tree</strong>
+                    <p>Difficulty levels</p>
+                </div>
+                <div class="ds-item">
+                    <span class="ds-icon">🗺️</span>
+                    <strong>HashMap</strong>
+                    <p>AI memory</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="mode-select" id="modeSelect">
+            <h2>Select Game Mode</h2>
+            <div class="mode-buttons">
+                <button class="mode-btn" onclick="selectMode('ai')">
+                    <span class="mode-emoji">🤖</span>
+                    <span class="mode-name">VS AI</span>
+                    <span class="mode-desc">Play against intelligent computer</span>
+                </button>
+                <button class="mode-btn" onclick="selectMode('multiplayer')">
+                    <span class="mode-emoji">👥</span>
+                    <span class="mode-name">Multiplayer</span>
+                    <span class="mode-desc">Play with a friend</span>
+                </button>
+            </div>
+        </div>
+
+        <div class="difficulty-select hidden" id="difficultySelect">
+            <h2>Select Difficulty Level</h2>
+            <p class="difficulty-desc">Choose your challenge based on grid size and AI speed</p>
+            <div class="difficulty-buttons">
+                <button class="difficulty-btn easy" onclick="startGame('easy')">
+                    <span class="diff-emoji">🟢</span>
+                    <span class="diff-name">Easy</span>
+                    <span class="diff-details">3×4 Grid | 6 Pairs</span>
+                    <span class="diff-ai">AI Delay: 1.5s</span>
+                </button>
+                <button class="difficulty-btn medium" onclick="startGame('medium')">
+                    <span class="diff-emoji">🟡</span>
+                    <span class="diff-name">Medium</span>
+                    <span class="diff-details">4×4 Grid | 8 Pairs</span>
+                    <span class="diff-ai">AI Delay: 1.0s</span>
+                </button>
+                <button class="difficulty-btn hard" onclick="startGame('hard')">
+                    <span class="diff-emoji">🔴</span>
+                    <span class="diff-name">Hard</span>
+                    <span class="diff-details">4×6 Grid | 12 Pairs</span>
+                    <span class="diff-ai">AI Delay: 0.8s</span>
+                </button>
+            </div>
+            <button class="btn-back" onclick="backToModeSelect()">← Back to Mode Selection</button>
+        </div>
+
+        <div id="gameContainer" style="display: none;">
+
+            <div class="score-board">
+                <div class="score-item player-score">
+                    <div class="score-header">
+                        <span class="score-icon" id="player1Icon">👤</span>
+                        <span class="score-label" id="player1Label">Player 1</span>
+                    </div>
+                    <div class="score-value" id="playerScore">0</div>
+                    <div class="score-bar">
+                        <div class="score-fill player-fill" id="playerBar"></div>
+                    </div>
+                </div>
+                <div class="score-divider">VS</div>
+                <div class="score-item ai-score">
+                    <div class="score-header">
+                        <span class="score-icon" id="player2Icon">🤖</span>
+                        <span class="score-label" id="player2Label">AI</span>
+                    </div>
+                    <div class="score-value" id="aiScore">0</div>
+                    <div class="score-bar">
+                        <div class="score-fill ai-fill" id="aiBar"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="turn-indicator player" id="turnIndicator">
+                <span class="turn-icon">👤</span>
+                <span class="turn-text">Your Turn! Click a card to start</span>
+            </div>
+
+            <div class="stats-panel" id="statsPanel">
+                <div class="stat">
+                    <span class="stat-label">Moves (Stack):</span>
+                    <span class="stat-value" id="moveCount">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">AI Memory:</span>
+                    <span class="stat-value" id="aiMemory">0 cards</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Matched:</span>
+                    <span class="stat-value" id="matchedPairs">0/0</span>
+                </div>
+            </div>
+
+            <div class="ai-memory-display" id="aiMemoryDisplay" style="display: none;">
+                <h4>🧠 AI Memory (HashMap):</h4>
+                <div id="aiMemoryContent"></div>
+            </div>
+
+            <div class="game-board" id="gameBoard"></div>
+
+            <div class="controls">
+                <button class="btn btn-undo" onclick="undoMove()" id="undoBtn">
+                    <span class="btn-icon">↶</span>
+                    <span class="btn-text">Undo</span>
+                </button>
+                <button class="btn btn-stats" onclick="toggleStats()">
+                    <span class="btn-icon">📊</span>
+                    <span class="btn-text">Stats</span>
+                </button>
+                <button class="btn btn-memory" onclick="toggleAIMemory()">
+                    <span class="btn-icon">🧠</span>
+                    <span class="btn-text">AI Memory</span>
+                </button>
+                <button class="btn btn-reset" onclick="resetGame()">
+                    <span class="btn-icon">🔄</span>
+                    <span class="btn-text">New Game</span>
+                </button>
+                <button class="btn btn-exit" onclick="exitGame()">
+                    <span class="btn-icon">⛔</span>
+                    <span class="btn-text">Exit</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="game-over" id="gameOver">
+        <div class="game-over-content">
+            <div class="result-animation" id="resultAnimation"></div>
+            <div class="emoji" id="resultEmoji"></div>
+            <h2 id="resultTitle"></h2>
+            <div class="final-score" id="finalScore"></div>
+            <div class="game-stats" id="gameStats"></div>
+            <div class="button-group">
+                <button class="btn-primary" onclick="resetToMenu()">
+                    <span>🏠</span> Main Menu
+                </button>
+                <button class="btn-secondary" onclick="playAgain()">
+                    <span>🔄</span> Play Again
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="ai-thinking" id="aiThinking">
+        <div class="thinking-content">
+            <div class="thinking-spinner"></div>
+            <p>🤖 AI is analyzing...</p>
+            <div class="thinking-dots">
+                <span>.</span><span>.</span><span>.</span>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
